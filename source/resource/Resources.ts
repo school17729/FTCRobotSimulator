@@ -39,19 +39,38 @@ class Resources {
         return maximumLoadingTime;
     }
 
-    addImage(imagePath: string): number {
+    public addImage(imagePath: string): number {
         return this.addResource(imagePath, "img");
     }
 
-    addAudio(audioPath: string): number {
+    public addAudio(audioPath: string): number {
         return this.addResource(audioPath, "audio");
     }
 
-    addVideo(videoPath: string): number {
+    public addVideo(videoPath: string): number {
         return this.addResource(videoPath, "video");
     }
 
-    addResource(path: string, type: ResourceType): number {
+    public loadResources(): Promise<void[]> {
+        const resourcePromises: Promise<void>[] = [];
+        for (let i: number = 0; i < this.resourceInformations.length; i++) {
+            const resourceInformation: ResourceInformation = this.resourceInformations[i];
+            const element: ResourceElement = resourceInformation.getElement();
+
+            resourcePromises.push(this.makeResourcePromise(element));
+        }
+
+        return Promise.all(resourcePromises);
+    }
+
+    public getImage(imageId: number): HTMLImageElement {
+        if (this.resourceInformations[imageId].getType() !== "img")
+            throw new Error("[Resources]: Image id " + imageId + " does not represent an image.");
+
+        return this.resourceInformations[imageId].getElement() as HTMLImageElement;
+    }
+
+    private addResource(path: string, type: ResourceType): number {
         const element: ResourceElement = document.createElement(type);
         element.src = path;
         
@@ -60,7 +79,7 @@ class Resources {
         return this.currentId++;
     }
 
-    makeResourcePromise(resource: ResourceElement): Promise<void> {
+    private makeResourcePromise(resource: ResourceElement): Promise<void> {
         return new Promise<void>(
             (
                 resolve: () => void,
@@ -86,19 +105,7 @@ class Resources {
         );
     }
 
-    loadResources(): Promise<void[]> {
-        const resourcePromises: Promise<void>[] = [];
-        for (let i: number = 0; i < this.resourceInformations.length; i++) {
-            const resourceInformation: ResourceInformation = this.resourceInformations[i];
-            const element: ResourceElement = resourceInformation.getElement();
-
-            resourcePromises.push(this.makeResourcePromise(element));
-        }
-
-        return Promise.all(resourcePromises);
-    }
-
-    getResourceTypeFromElement(resourceElement: ResourceElement): ResourceType {
+    private getResourceTypeFromElement(resourceElement: ResourceElement): ResourceType {
         if (this.resourcesLoaded) {
             for (let i: number = 0; i < this.resourceInformations.length; i++) {
                 const resourceInformation: ResourceInformation = this.resourceInformations[i];
@@ -113,7 +120,7 @@ class Resources {
         throw new Error("[Resources]: Could not get resource type from resource element.");
     }
 
-    getResourceElementFromPath(resourcePath: string): ResourceElement {
+    private getResourceElementFromPath(resourcePath: string): ResourceElement {
         if (this.resourcesLoaded) {
             for (let i: number = 0; i < this.resourceInformations.length; i++) {
                 const resourceInformation: ResourceInformation = this.resourceInformations[i];

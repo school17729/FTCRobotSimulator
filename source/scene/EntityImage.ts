@@ -1,13 +1,9 @@
 class EntityImage {
 
     private id: number;
-    public width: number;
-    public height: number;
 
-    constructor(id: number, width: number, height: number) {
+    constructor(id: number) {
         this.id = id;
-        this.width = width;
-        this.height = height;
     }
 
     public getId(): number {

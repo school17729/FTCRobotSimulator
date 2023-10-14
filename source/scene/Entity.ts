@@ -1,19 +1,13 @@
+import { Position } from "../generic/Position.js";
+
 class Entity {
 
-    private x: number;
-    private y: number;
+    public position: Position;
+    public rotation: number;
 
-    constructor(x: number, y: number) {
-        this.x = x;
-        this.y = y;
-    }
-
-    public getX(): number {
-        return this.x;
-    }
-
-    public getY(): number {
-        return this.y;
+    constructor(position: Position, rotation: number) {
+        this.position = position;
+        this.rotation = rotation;
     }
 }
 
