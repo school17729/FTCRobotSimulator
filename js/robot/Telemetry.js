@@ -1,0 +1,3 @@
+class Telemetry {
+}
+export { Telemetry };
